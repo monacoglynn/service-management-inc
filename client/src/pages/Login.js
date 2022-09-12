@@ -1,71 +1,87 @@
-import React, { useState } from 'react';
-import { useMutation } from '@apollo/client';
-import { Link } from 'react-router-dom';
-import { LOGIN } from '../utils/mutations';
-import Auth from '../utils/auth';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Form, Button, Row, Col } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import AlertMessage from "../components/AlertMessage";
+import Spiner from "../components/Spiner";
+import FormContainer from "../components/FormContainer";
+import { login } from "../actions/userActions";
 
-function Login(props) {
-  const [formState, setFormState] = useState({ email: '', password: '' });
-  const [login, { error }] = useMutation(LOGIN);
+const Login = () => {
+    // default value for the form
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    // register redux payload
+    const dispatch = useDispatch();
 
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      const mutationResponse = await login({
-        variables: { email: formState.email, password: formState.password },
-      });
-      const token = mutationResponse.data.login.token;
-      Auth.login(token);
-    } catch (e) {
-      console.log(e);
-    }
-  };
+    // redux state for login user userInfo
+    const userLogin = useSelector((state) => state.userLogin);
+    const { loading, error, userInfo } = userLogin;
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormState({
-      ...formState,
-      [name]: value,
-    });
-  };
+    // routeing and redirect handling
+    const location = useLocation();
+    const navigate = useNavigate();
+    const redirect = location.search ? '/' + location.search.split("=")[1] : "/";
 
-  return (
-    <div className="container my-1">
-      <Link to="/signup">← Go to Signup</Link>
+    useEffect(() => {
+        // if use loggedIn redirect to homepage
+        if (userInfo) {
+            // console.log(location)
+            navigate(redirect);
+        }
+    }, [navigate,userInfo, redirect]);
 
-      <h2>Login</h2>
-      <form onSubmit={handleFormSubmit}>
-        <div className="flex-row space-between my-2">
-          <label htmlFor="email">Email address:</label>
-          <input
-            placeholder="youremail@test.com"
-            name="email"
-            type="email"
-            id="email"
-            onChange={handleChange}
-          />
-        </div>
-        <div className="flex-row space-between my-2">
-          <label htmlFor="pwd">Password:</label>
-          <input
-            placeholder="******"
-            name="password"
-            type="password"
-            id="pwd"
-            onChange={handleChange}
-          />
-        </div>
-        {error ? (
-          <div>
-            <p className="error-text">The provided credentials are incorrect</p>
-          </div>
-        ) : null}
-        <div className="flex-row flex-end">
-          <button type="submit">Submit</button>
-        </div>
-      </form>
-    </div>
-  );
-}
+    const submitHandler = (e) => {
+        e.preventDefault();
+        // submit the payload
+        dispatch(login(email, password));
+    };
+    return (
+        <FormContainer>
+            <h1>Sign In</h1>
+            {error && <AlertMessage variant="danger">{error}</AlertMessage>}
+            {loading && <Spiner />}
+            <Form onSubmit={submitHandler}>
+                <Form.Group controlId="email">
+                    <Form.Label>Email Address</Form.Label>
+                    <Form.Control
+                        type="email"
+                        placeholder="Enter email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    ></Form.Control>
+                </Form.Group>
+
+                <Form.Group controlId="password">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control
+                        type="password"
+                        placeholder="Enter password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    ></Form.Control>
+                </Form.Group>
+
+                <Button type="submit" variant="primary" className="my-2">
+                    Sign In
+                </Button>
+            </Form>
+            <Row className="py-3">
+                <Col>
+                    New Customer?{" "}
+                    <Link
+                        to={
+                            redirect
+                                ? `/signup?redirect=${redirect}`
+                                : "/signup"
+                        }
+                    >
+                        Register
+                    </Link>
+                </Col>
+            </Row>
+        </FormContainer>
+    );
+};
 
 export default Login;

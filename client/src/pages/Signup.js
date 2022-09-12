@@ -1,87 +1,110 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useMutation } from '@apollo/client';
-import Auth from '../utils/auth';
-import { ADD_USER } from '../utils/mutations';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Form, Button, Row, Col } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import AlertMessage from "../components/AlertMessage";
+import Spiner from "../components/Spiner";
+import FormContainer from "../components/FormContainer";
+import { signup } from "../actions/userActions";
 
-function Signup(props) {
-  const [formState, setFormState] = useState({ email: '', password: '' });
-  const [addUser] = useMutation(ADD_USER);
+const SignUp = () => {
+    // default form states
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [message, setMessage] = useState(null);
 
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
-    const mutationResponse = await addUser({
-      variables: {
-        email: formState.email,
-        password: formState.password,
-        firstName: formState.firstName,
-        lastName: formState.lastName,
-      },
-    });
-    const token = mutationResponse.data.addUser.token;
-    Auth.login(token);
-  };
+    //inititate redux functions
+    const dispatch = useDispatch();
+    // get States from redux payload
+    const userRegister = useSelector((state) => state.userRegister);
+    const { loading, error, userInfo } = userRegister;
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormState({
-      ...formState,
-      [name]: value,
-    });
-  };
+    // Redirect after sign up
+    const location = useLocation();
+    const navigate = useNavigate();
+    const redirect = location.search ? location.search.split("=")[1] : "/";
+    useEffect(() => {
+        if (userInfo) {
+            navigate(redirect);
+        }
+    }, [navigate, userInfo, redirect]);
 
-  return (
-    <div className="container my-1">
-      <Link to="/login">← Go to Login</Link>
+    const submitHandler = (e) => {
+        e.preventDefault();
+        if (password !== confirmPassword) {
+            setMessage("Passwords do not match");
+        } else {
+            dispatch(signup(name, email, password));
+        }
+    };
 
-      <h2>Signup</h2>
-      <form onSubmit={handleFormSubmit}>
-        <div className="flex-row space-between my-2">
-          <label htmlFor="firstName">First Name:</label>
-          <input
-            placeholder="First"
-            name="firstName"
-            type="firstName"
-            id="firstName"
-            onChange={handleChange}
-          />
-        </div>
-        <div className="flex-row space-between my-2">
-          <label htmlFor="lastName">Last Name:</label>
-          <input
-            placeholder="Last"
-            name="lastName"
-            type="lastName"
-            id="lastName"
-            onChange={handleChange}
-          />
-        </div>
-        <div className="flex-row space-between my-2">
-          <label htmlFor="email">Email:</label>
-          <input
-            placeholder="youremail@test.com"
-            name="email"
-            type="email"
-            id="email"
-            onChange={handleChange}
-          />
-        </div>
-        <div className="flex-row space-between my-2">
-          <label htmlFor="pwd">Password:</label>
-          <input
-            placeholder="******"
-            name="password"
-            type="password"
-            id="pwd"
-            onChange={handleChange}
-          />
-        </div>
-        <div className="flex-row flex-end">
-          <button type="submit">Submit</button>
-        </div>
-      </form>
-    </div>
-  );
-}
+    return (
+        <FormContainer>
+            <h1>Sign Up</h1>
+            {/* If there is message from form feedback */}
+            {message && <AlertMessage variant="danger">{message}</AlertMessage>}
+            {error && <AlertMessage variant="danger">{error}</AlertMessage>}
+            {loading && <Spiner />}
+            <Form onSubmit={submitHandler}>
+                <Form.Group controlId="name">
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control
+                        type="name"
+                        placeholder="Enter name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    ></Form.Control>
+                </Form.Group>
 
-export default Signup;
+                <Form.Group controlId="email">
+                    <Form.Label>Email Address</Form.Label>
+                    <Form.Control
+                        type="email"
+                        placeholder="Enter email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    ></Form.Control>
+                </Form.Group>
+
+                <Form.Group controlId="password">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control
+                        type="password"
+                        placeholder="Enter password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    ></Form.Control>
+                </Form.Group>
+
+                <Form.Group controlId="confirmPassword">
+                    <Form.Label>Confirm Password</Form.Label>
+                    <Form.Control
+                        type="password"
+                        placeholder="Confirm password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                    ></Form.Control>
+                </Form.Group>
+
+                <Button type="submit" variant="primary" className="my-2">
+                    Register
+                </Button>
+            </Form>
+
+            <Row className="py-3">
+                <Col>
+                    Have an Account?{" "}
+                    <Link
+                        to={redirect ? `/login?redirect=${redirect}` : "/login"}
+                    >
+                        Login
+                    </Link>
+                </Col>
+            </Row>
+        </FormContainer>
+    );
+};
+
+export default SignUp;

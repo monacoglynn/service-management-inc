@@ -37,49 +37,14 @@ To install necessary dependencies, run the following command:
   npm i
 ```
 
-###### Create database in mySQL
-
-```
-   mysql -u <username> -p
-```
-
-```
-   source ./db/schema.sql
-```
-
-###### Connect mySQL database with .env file
-
-```
-  DB_USER=''
-  DB_PW=''
-  DB_NAME='pokemon_db'
-```
-
-###### Seed database with default data
-
-```
-npm run seed
-```
-
 ###### Start server
 
 ```
 npm run start
 ```
 
-###### Watch server for development
-
-```
-npm run watch
-```
-
-You need to install `nodemon` before running
-
 ## Future Development
 
-- Add trading features
-- Enhanced UI
-- Battle online
-- Instant message with friends
-
-![splash-page](public/images/splash.png)
+- Adding a pre requsite form for approval to be posted
+- Live chat funtion to connect service providers with clients
+- Accepting crypto as payment

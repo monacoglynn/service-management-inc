@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 Developers: [Cecilia](https://github.com/responsibleparty), [Hai](https://github.com/caubenondo), [Marshall](https://github.com/marshall-rust), [Patrick](https://github.com/monacoglynn), [Richmond](https://github.com/richmonddz)
 
-##[Live Demo](https://project2-rllr.herokuapp.com/)
+##[Live Demo](https://glacial-lowlands-84709.herokuapp.com/)
 
 ## Table of Contents
 
@@ -12,7 +12,6 @@ Developers: [Cecilia](https://github.com/responsibleparty), [Hai](https://github
 - [User Story](#UserStory)
 - [Technology](#Tech)
 - [Installation](#Installation)
-- [API](#API)
 - [Future Developement](#Future)
 
 # Description
@@ -26,6 +25,10 @@ We wanted to build a website where everyone could post and offer services that p
 ## User Story
 
 As a customer I want to find a service while supporting small business.
+
+## Technology
+
+- MERN Stack
 
 ## Installation
 

@@ -70,7 +70,7 @@ function ProductDetail({ history }) {
                                 />
                             </ListGroup.Item>
                             <ListGroup.Item>
-                                Price: $ {product.price}
+                                Price: $ {product.price} per hour
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 Description: {product.description}
@@ -84,7 +84,7 @@ function ProductDetail({ history }) {
                                     <Row>
                                         <Col>Price:</Col>
                                         <Col>
-                                            <strong>${product.price}</strong>
+                                            <strong>${product.price} per hour</strong>
                                         </Col>
                                     </Row>
                                 </ListGroup.Item>

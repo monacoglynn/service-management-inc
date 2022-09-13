@@ -34,7 +34,7 @@ function Home() {
 
     return (
         <>
-            <h1>Lastest Product</h1>
+            <h1>Lastest Services</h1>
             {loading ? (
                 <Spiner></Spiner>
             ) : error ? (
